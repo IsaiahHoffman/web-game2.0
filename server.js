@@ -17,7 +17,6 @@ app.use(express.json())
 
 
 const User = require('./Models/User')
-const Player = require('./Models/Player');
 let users = []
 let loggingUser = ""
 app.get('/', (req, res) => {
@@ -68,7 +67,7 @@ app.post('/CreateAccount', (req, res) => {
     if (fail) {
         res.redirect('/CreateAccount')
     } else {
-        const userX = new User(name, pass)
+        const userX = new User(name, pass, 0, 0)
         users[users.length] = userX
         loggingUser = name
         res.redirect('/game')
@@ -90,12 +89,8 @@ app.post('/game', (req, res) => {
             users[i].y = req.body.deltaY
         }
     }
-    res.end()
-})
-
-app.put('/game', (req, res) => {
-    res.json(JSON.stringify(users))
-    res.end()
+    let dataRes = JSON.stringify(users)
+    res.send(dataRes)
 })
 
 
