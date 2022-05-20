@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
+process.env.PWD = process.cwd()
 
 const express = require('express');
 const app = express();
@@ -11,7 +12,7 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: false }))
 const path = require('path');
 
 app.set('view engine', 'ejs');
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(process.env.PWD, 'public')))
 
 app.use(express.json())
 
