@@ -18,18 +18,11 @@ const gl = canvas.getContext('2d')
 if (gl == null) {
     alert('Webgl not supported')
 }
+let canW = canvas.width
+let canL = canvas.length
 let speed = 2
 let deltaX = 0
 let deltaY = 0
-
-
-function drawCircle(x, y, color) {
-    gl.beginPath();
-    gl.arc(x, y, 20, 0, 2 * Math.PI);
-    gl.fillStyle = color;
-    gl.fill();
-    gl.closePath()
-}
 
 async function draw() {
     var myHeaders = new Headers();
@@ -54,14 +47,38 @@ async function draw() {
     gl.clearRect(0, 0, canvas.width, canvas.height);
     drawCircle(deltaX, deltaY, 'rgba(200,200,100,0.8)')
     for (let z = 0; z < players.length; z++) {
-        if (players[z].username != user){
+        if (players[z].username != user) {
             drawCircle(players[z].x, players[z].y, 'rgba(100,100,100,0.8)')
         }
     }
     let div = document.getElementById('data2')
-    div.innerHTML = "X: " + deltaX + "  Y: " + deltaY + "\n" //+ players
+    div.innerHTML = "X: " + deltaX + "  Y: " + deltaY
 
     //window.requestAnimationFrame(draw)
+}
+
+// -------------------Drawing Functions------------------------ //
+
+function drawCircle(x, y, color) {
+    gl.beginPath();
+    gl.arc(x, y, 20, 0, 2 * Math.PI);
+    gl.fillStyle = color;
+    gl.fill();
+    gl.closePath()
+}
+
+// ---------------------Event Functions------------------------ //
+
+// Mouse Events
+window.addEventListener("click", function (e) {
+    getCursorPosition(canvas, e)
+})
+
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    // console.log("x: " + x + " y: " + y)
 }
 
 // Movement
@@ -95,15 +112,12 @@ function keysPressed(e) {
     }
 
     e.preventDefault();
-
-    //draw();
 }
 
 function keysReleased(e) {
     // mark keys that were released
     keys[e.keyCode] = false;
 }
-
 
 function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
