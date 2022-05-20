@@ -33,7 +33,7 @@ async function draw() {
         "name": user
     });
 
-    const URL = 'http://10.0.0.153:5000/game';
+    const URL = 'game';
     const Res = fetch(URL, {
         method: 'POST',
         headers: myHeaders,
