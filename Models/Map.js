@@ -18,27 +18,27 @@ class Map {
         this.objects[this.objects.length] = object
     }
     generate() {
-        for (let a = 0; a < this.length; a++) {
-            for (let b = 0; b < this.length; b++) {
-                let zero = 0
-                let one = 0
+        // for (let a = 0; a < this.length; a++) {
+        //     for (let b = 0; b < this.length; b++) {
+        //         let zero = 0
+        //         let one = 0
 
-                switch (this.layer1[a - 1][b]) {
-                    case 0:
-                        zero += .25
-                    case 1:
-                        one += .25
-                }
+        //         switch (this.layer1[a - 1][b]) {
+        //             case 0:
+        //                 zero += .25
+        //             case 1:
+        //                 one += .25
+        //         }
 
-                switch (this.layer1[a ][b - 1]) {
-                    case 0:
-                        zero += .25
-                    case 1:
-                        one += .25
-                }
-                this.layer1[a][b] = 0
-            }
-        }
+        //         switch (this.layer1[a ][b - 1]) {
+        //             case 0:
+        //                 zero += .25
+        //             case 1:
+        //                 one += .25
+        //         }
+        //         this.layer1[a][b] = 0
+        //     }
+        // }
     }
 }
 
