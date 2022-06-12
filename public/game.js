@@ -1,12 +1,18 @@
-class User {
-    constructor(username, password, x, y) {
-        this.username = username
-        this.password = password
-        this.x = x
-        this.y = y
-    }
+function cir(x, y, rad, color) {
+    gl.beginPath();
+    gl.arc(x, y, rad, 0, 2 * Math.PI);
+    gl.fillStyle = color;
+    gl.fill();
+    gl.closePath()
 }
 
+function rect(x, y, w, h, color) {
+    gl.beginPath();
+    gl.rect(x, y, w, h);
+    gl.fillStyle = color;
+    gl.fill();
+    gl.closePath()
+}
 
 let user = document.getElementById('username').innerHTML
 if (user == "NOTLOGGEDIN") {
@@ -19,20 +25,23 @@ if (gl == null) {
     alert('Webgl not supported')
 }
 let canW = canvas.width
-let canL = canvas.length
+let canH = canvas.height
 let speed = 2
-let deltaX = 0
-let deltaY = 0
+let fps = 30
+fps = 1000 / fps
+let mouseX = 0
+let mouseY = 0
+let test = ""
+let movingObject = null
+let X = 0
+let Y = 0
+let dataToUpload = [{ id: user, canW: canW, canH: canH, cmX:mouseX, cmY:mouseY, x: X, y: Y }, null]
 
 async function draw() {
+    // -----------------Pull Data--------------------- //
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    var dataS = JSON.stringify({
-        "deltaX": deltaX,
-        "deltaY": deltaY,
-        "name": user
-    });
-
+    var dataS = JSON.stringify(dataToUpload);
     const URL = 'game';
     const Res = fetch(URL, {
         method: 'POST',
@@ -41,30 +50,29 @@ async function draw() {
         cache: 'default',
         body: dataS
     });
+    dataToUpload = [{ id: user, canW: canW, canH: canH, cmX:mouseX, cmY:mouseY, x: X, y: Y }, null]
     const response = await Res;
-    const players = await response.json();
+    const data = await response.json();
+
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    canW = canvas.width
+    canH = canvas.height
 
     gl.clearRect(0, 0, canvas.width, canvas.height);
-    drawCircle(deltaX, deltaY, 'rgba(200,200,100,0.8)')
-    for (let z = 0; z < players.length; z++) {
-        if (players[z].username != user) {
-            drawCircle(players[z].x, players[z].y, 'rgba(100,100,100,0.8)')
+
+    for (let i = 0; i < data.length; i++) {
+        switch (data[i].id) {
+            case "Rect":
+                rect(data[i].x, data[i].y, data[i].width, data[i].height, data[i].color)
+            case "Cir":
+                cir(data[i].x, data[i].y, data[i].rad, data[i].color)
         }
     }
+
+    // -----------------Testing---------------------- //
     let div = document.getElementById('data2')
-    div.innerHTML = "X: " + deltaX + "  Y: " + deltaY
-
-    //window.requestAnimationFrame(draw)
-}
-
-// -------------------Drawing Functions------------------------ //
-
-function drawCircle(x, y, color) {
-    gl.beginPath();
-    gl.arc(x, y, 20, 0, 2 * Math.PI);
-    gl.fillStyle = color;
-    gl.fill();
-    gl.closePath()
+    div.innerHTML = "KeyX: " + X + " KeyY: " + Y + "      " + "MosX: " + mouseX + " MosY: " + mouseY + " " + test
 }
 
 // ---------------------Event Functions------------------------ //
@@ -78,8 +86,29 @@ function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
-    // console.log("x: " + x + " y: " + y)
+    //console.log("x: " + x + " y: " + y)
+    dataToUpload[1] = {
+        id: "click",
+        x: x,
+        y: y
+    }
 }
+
+function mousemove(event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    // console.log("x: " + x + " y: " + y)
+    mouseX = x
+    mouseY = Math.ceil(y)
+    if (movingObject != null) {
+        movingObject.x = mouseX
+        movingObject.y = mouseY
+    }
+}
+
+window.addEventListener('mousemove', mousemove);
+
 
 // Movement
 window.addEventListener("keydown", keysPressed, false);
@@ -93,24 +122,23 @@ function keysPressed(e) {
 
     // left
     if (keys[37]) {
-        deltaX -= speed;
+        X -= speed;
     }
 
     // right
     if (keys[39]) {
-        deltaX += speed;
+        X += speed;
     }
 
     // down
     if (keys[38]) {
-        deltaY -= speed;
+        Y -= speed;
     }
 
     // up
     if (keys[40]) {
-        deltaY += speed;
+        Y += speed;
     }
-
     e.preventDefault();
 }
 
@@ -124,7 +152,7 @@ function sleep(milliseconds) {
 }
 async function fun() {
     while (true) {
-        await sleep(50);
+        await sleep(fps);
         draw()
     }
 }

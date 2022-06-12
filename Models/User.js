@@ -1,9 +1,9 @@
 class User {
-    constructor(username, password, x, y) {
+    constructor(username, password, buttonsClicked) {
         this.username = username
         this.password = password
-        this.x = x
-        this.y = y
+        this.buttons = buttonsClicked
+        this.movingObject = null
     }
 }
 
